@@ -1,9 +1,9 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import AdminLayout from '@/views/AdminLayout.vue'
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p class="text-red-500">
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <AdminLayout>
+    <router-view />
+  </AdminLayout>
 </template>
