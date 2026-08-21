@@ -21,11 +21,21 @@ import { useRouter } from 'vue-router'
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const
 const TIMELINE_PAGE = { limit: 100, offset: 0 }
+
+// "Spotted" is a derived state (sighting_count > 0 while still Searching) —
+// it is never stored in the DB column, so we cannot pass it to the backend as
+// a status filter. Instead, when the user picks "Spotted" we send
+// status=Searching to the backend and client-side filter the page to rows
+// where sighting_count > 0. Pagination total will show the Searching count
+// (not the exact Spotted count) — acceptable for an admin tool.
 const PET_STATUSES = ['Searching', 'Spotted', 'Found', 'Resolved'] as const
 const SPECIES_OPTIONS = ['Cat', 'Dog', 'Bird', 'Other'] as const
-const FILTERS: { label: string; value: PetStatus | null }[] = [
+const FILTERS: { label: string; value: typeof PET_STATUSES[number] | null }[] = [
   { label: 'All', value: null },
-  ...PET_STATUSES.map((value) => ({ label: value, value })),
+  { label: 'Searching', value: 'Searching' },
+  { label: 'Spotted', value: 'Spotted' },
+  { label: 'Found', value: 'Found' },
+  { label: 'Resolved', value: 'Resolved' },
 ]
 
 const router = useRouter()
@@ -49,6 +59,8 @@ async function loadPets() {
   loading.value = true
   error.value = null
   try {
+    // Send status.value directly — the backend now understands 'Spotted' and
+    // 'Searching' as derived filters and returns the correct items + total.
     const data = await listMissingPets(
       { limit: pageSize.value, offset: offset.value },
       status.value,
@@ -146,7 +158,16 @@ onMounted(loadPets)
                   </div>
                 </td>
                 <td class="px-4 py-2.5 text-stone-600 capitalize">{{ pet.species }}</td>
-                <td class="px-4 py-2.5"><StatusBadge :value="pet.status" /></td>
+                 <td class="px-4 py-2.5">
+                   <!-- Option B: derive "Spotted" from sighting_count so the badge
+                        stays in the same vocabulary as the filter (Searching /
+                        Spotted / Found / Resolved). "Spotted" is never stored
+                        in the DB column — it is inferred here from the count
+                        that attach_sighting_counts() now includes on every row. -->
+                   <StatusBadge
+                     :value="pet.status === 'Searching' && (pet.sighting_count ?? 0) > 0 ? 'Spotted' : pet.status"
+                   />
+                 </td>
                 <td class="px-4 py-2.5 text-stone-700 whitespace-nowrap">{{ formatBounty(pet.bounty_amount) }}</td>
                 <td class="px-4 py-2.5 text-stone-600 whitespace-nowrap">{{ formatDateTime(pet.created_at) }}</td>
                 <td class="px-4 py-2.5 font-mono text-xs text-stone-500">

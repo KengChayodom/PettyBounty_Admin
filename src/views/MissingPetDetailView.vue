@@ -130,7 +130,9 @@ onMounted(() => {
               <h2 class="text-xl font-bold text-stone-900">{{ pet.pet_name }}</h2>
               <p class="text-stone-500 capitalize">{{ pet.species }}</p>
             </div>
-            <StatusBadge :value="pet.status" />
+            <StatusBadge
+              :value="pet.status === 'Searching' && (pet.sighting_count ?? 0) > 0 ? 'Spotted' : pet.status"
+            />
           </div>
 
           <div class="mt-6 space-y-4 text-sm">

@@ -37,7 +37,8 @@ export interface Page {
  */
 export function listMissingPets(
   page: Page,
-  status?: PetStatus | null,
+  // 'Spotted' is a derived filter handled server-side (not a raw DB column value).
+  status?: PetStatus | 'Spotted' | null,
   species?: PetSpecies | null,
 ): Promise<Paginated<MissingPet>> {
   return request<Paginated<MissingPet>>('/admin/missing-pets', {

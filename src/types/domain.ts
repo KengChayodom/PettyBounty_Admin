@@ -54,7 +54,12 @@ export interface MissingPet {
   last_seen_time: string
   last_seen_location: string
   image_url: string
+  /** Raw DB column: Searching | Found | Resolved.
+   *  "Spotted" is derived in the template from sighting_count > 0. */
   status: PetStatus
+  /** Count of valid sightings; provided by attach_sighting_counts() on the
+   *  backend. Used to derive the "Spotted" badge when status is Searching. */
+  sighting_count?: number
   created_at: string
   primary_color_hex?: string | null
   pattern_id?: string | null
