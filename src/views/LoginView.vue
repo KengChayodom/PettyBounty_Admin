@@ -38,11 +38,7 @@ async function submit() {
   <div class="flex min-h-screen items-center justify-center bg-[#362621] p-4">
     <div class="w-full max-w-sm">
       <div class="mb-8 flex flex-col items-center gap-3 text-center">
-        <div
-          class="flex h-12 w-12 items-center justify-center rounded-xl border border-orange-500/30 bg-orange-500/20 font-bold text-orange-400"
-        >
-          PB
-        </div>
+        <img src="@/assets/logo.png" alt="Petty Bounty Logo" class="h-16 w-16 object-contain mb-2">
         <div>
           <h1 class="text-lg font-bold text-white">Petty Bounty</h1>
           <p class="text-[11px] tracking-widest text-gray-400 uppercase">Admin console</p>

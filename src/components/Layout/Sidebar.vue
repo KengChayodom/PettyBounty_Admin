@@ -18,7 +18,7 @@ const auth = useAuthStore()
 const navItems = [
   { name: 'Overview', desc: 'Platform pulse', icon: LayoutDashboard, path: '/' },
   { name: 'Missing pets', desc: 'Reports & timelines', icon: PawPrint, path: '/missing-pets' },
-  { name: 'Moderation', desc: 'Flagged sightings', icon: ShieldAlert, path: '/moderation' },
+  { name: 'Reviews', desc: 'Flagged sightings', icon: ShieldAlert, path: '/reviews' },
   { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
 ]
 
@@ -33,11 +33,7 @@ async function signOut() {
   <aside class="flex flex-col h-full bg-[#362621] text-white w-64 flex-shrink-0">
     <div class="p-6 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div
-          class="w-8 h-8 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold border border-orange-500/30"
-        >
-          PB
-        </div>
+        <img src="@/assets/logo.png" alt="Petty Bounty Logo" class="h-8 w-8 object-contain">
         <div>
           <h2 class="text-sm font-bold tracking-wide">Petty Bounty</h2>
           <p class="text-[10px] text-gray-400 uppercase tracking-widest">Admin console</p>
