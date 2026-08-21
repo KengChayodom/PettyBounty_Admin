@@ -44,20 +44,35 @@ export function formatSimilarity(score: number | string | null | undefined): str
  * and GeoJSON gives {coordinates:[lon,lat]}; both are shown lat, lon because
  * that is the order every map tool takes when pasted.
  */
-export function formatLocation(location: string | null | undefined): string {
-  if (!location) return '—'
+export function parseLocationStr(location: string | null | undefined): { lat: number, lng: number } | null {
+  if (!location) return null
   const wkt = /POINT\s*\(\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)\s*\)/i.exec(location)
-  if (wkt) return `${Number(wkt[2]).toFixed(5)}, ${Number(wkt[1]).toFixed(5)}`
+  if (wkt) return { lat: Number(wkt[2]), lng: Number(wkt[1]) }
+  
+  // EWKB Point (50 hex chars)
+  if (location.length === 50 && /^[0-9A-Fa-f]+$/.test(location)) {
+    try {
+      const buf = new Uint8Array(location.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)))
+      const view = new DataView(buf.buffer)
+      return { lng: view.getFloat64(9, true), lat: view.getFloat64(17, true) }
+    } catch {}
+  }
+
   try {
     const parsed = JSON.parse(location) as { coordinates?: number[] }
     const [lon, lat] = parsed.coordinates ?? []
     if (typeof lat === 'number' && typeof lon === 'number') {
-      return `${lat.toFixed(5)}, ${lon.toFixed(5)}`
+      return { lat, lng: lon }
     }
-  } catch {
-    /* not GeoJSON — fall through to the raw value */
-  }
-  return location
+  } catch {}
+  
+  return null
+}
+
+export function formatLocation(location: string | null | undefined): string {
+  const coords = parseLocationStr(location)
+  if (coords) return `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`
+  return location || '—'
 }
 
 export function shortId(id: string | null | undefined): string {
