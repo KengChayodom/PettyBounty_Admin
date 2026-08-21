@@ -15,11 +15,14 @@ const TONES: Record<string, string> = {
   Verified: 'border-emerald-500',
   Dismissed: 'border-rose-500',
   Reviewed_Penalty: 'border-rose-500',
-  // pet_status
-  Searching: 'border-sky-500',
-  Spotted: 'border-indigo-500',
+  // pet_status (raw DB column — kept for backward compat)
+  Searching: 'border-red-500',
   Found: 'border-emerald-500',
   Resolved: 'border-stone-400',
+  // post_status (derived badge from pet_logic — what the admin console now shows)
+  Spotted: 'border-indigo-500',
+  Expired: 'border-stone-400',
+  Rescued: 'border-emerald-500',
   // owner_decision
   Confirmed: 'border-emerald-500',
   Rejected: 'border-rose-500',
