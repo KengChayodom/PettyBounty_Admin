@@ -22,9 +22,9 @@ const router = createRouter({
       component: () => import('@/views/MissingPetDetailView.vue'),
     },
     {
-      path: '/moderation',
-      name: 'moderation',
-      component: () => import('@/views/ModerationView.vue'),
+      path: '/reviews',
+      name: 'reviews',
+      component: () => import('@/views/ReviewView.vue'),
     },
     { path: '/bounty', name: 'bounty', component: () => import('@/views/BountyView.vue') },
     { path: '/:pathMatch(.*)*', redirect: '/' },
