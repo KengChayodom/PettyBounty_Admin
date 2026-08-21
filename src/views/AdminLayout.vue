@@ -89,7 +89,7 @@ onUnmounted(() => {
       <Sidebar @close-mobile="isMobileMenuOpen = false" />
     </aside>
 
-    <main class="flex-1 overflow-y-auto flex flex-col min-w-0 pt-16 lg:pt-0">
+    <main class="flex flex-1 flex-col overflow-hidden min-w-0 pt-16 lg:pt-0">
       <slot />
     </main>
   </div>

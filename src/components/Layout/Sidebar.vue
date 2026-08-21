@@ -1,19 +1,32 @@
 <script setup lang="ts">
-import { LayoutDashboard, Users, ShieldAlert, CreditCard, X } from 'lucide-vue-next'
-import { useRoute } from 'vue-router'
+import { BadgeDollarSign, LayoutDashboard, LogOut, PawPrint, ShieldAlert, X } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 const emit = defineEmits<{
   (e: 'close-mobile'): void
 }>()
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 
+// One entry per duty an administrator actually has. Account management is
+// deliberately absent: nobody is suspended or banned here — an upheld flag
+// deducts score instead (2026-08-20), and the owner, not the administrator,
+// decides whether a sighting shows their pet (2026-08-21).
 const navItems = [
   { name: 'Overview', desc: 'Platform pulse', icon: LayoutDashboard, path: '/' },
-  { name: 'Users', desc: 'Accounts & policy', icon: Users, path: '/users' },
-  { name: 'Moderation', desc: 'Listings & disputes', icon: ShieldAlert, path: '/moderation' },
-  { name: 'Transactions', desc: 'Payouts & analytics', icon: CreditCard, path: '/transactions' },
+  { name: 'Missing pets', desc: 'Reports & timelines', icon: PawPrint, path: '/missing-pets' },
+  { name: 'Moderation', desc: 'Flagged sightings', icon: ShieldAlert, path: '/moderation' },
+  { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
 ]
+
+async function signOut() {
+  emit('close-mobile')
+  await auth.logout()
+  await router.replace({ name: 'login' })
+}
 </script>
 
 <template>
@@ -62,5 +75,22 @@ const navItems = [
         </div>
       </router-link>
     </nav>
+
+    <div class="border-t border-white/10 p-4">
+      <div class="mb-3 min-w-0 px-1">
+        <p class="truncate text-sm font-medium">
+          {{ auth.profile?.display_name ?? 'Administrator' }}
+        </p>
+        <p class="text-[10px] tracking-widest text-gray-400 uppercase">Administrator</p>
+      </div>
+      <button
+        type="button"
+        class="flex w-full cursor-pointer items-center gap-3 rounded-xl px-4 py-2.5 text-sm text-gray-400 transition-colors hover:bg-[#4A3731]/50 hover:text-white"
+        @click="signOut"
+      >
+        <LogOut :size="18" />
+        Sign out
+      </button>
+    </div>
   </aside>
 </template>
