@@ -29,7 +29,7 @@ export interface Page {
 }
 
 /**
- * SRS-64 / UD-14 step 1 — browse every report on the platform.
+ * SRS-66 / UD-14 step 1 — browse every report on the platform.
  *
  * The backend counts the rows matching `status` and returns that count with
  * the page, so paging here is server-side in both directions: the window is
@@ -52,7 +52,7 @@ export function fetchMissingPet(petId: string): Promise<MissingPet> {
 }
 
 /**
- * SRS-66 / UD-14 step 7 — remove a report that breaks the guidelines.
+ * SRS-65 / UD-14 step 2 — remove a report that breaks the guidelines.
  *
  * A hard delete: UD-14's postcondition is "removed from the database and the
  * search map", and the backend cascades to `sighting_matches`. There is no undo.
@@ -61,7 +61,7 @@ export function removeMissingPet(petId: string): Promise<MissingPet> {
   return request<MissingPet>(`/admin/missing-pets/${petId}`, { method: 'DELETE' })
 }
 
-/** SRS-63 / UD-13 — the full timeline, Dismissed entries included. */
+/** SRS-64 / UD-13 — the full timeline, Dismissed entries included. */
 export function fetchSightingTimeline(petId: string, page: Page): Promise<TimelineEntry[]> {
   return request<TimelineEntry[]>(`/admin/missing-pets/${petId}/sighting-timeline`, {
     query: { limit: page.limit, offset: page.offset },
@@ -81,7 +81,7 @@ export function listFlags(page: Page, status?: FlagStatus | null): Promise<Pagin
 }
 
 /**
- * SRS-68 / UD-14 — decide a flag.
+ * SRS-68 / UD-16 — decide a flag.
  *
  * Upholding dismisses the flagged sighting and deducts score from the hunter
  * who submitted it; `penaltyPoints` overrides the per-reason default and 0
@@ -105,11 +105,11 @@ export function reviewFlag(
 }
 
 /**
- * SRS-82 / UD-19 — withdraw a sighting, or reverse that withdrawal.
+ * SRS-80 / UD-16 — withdraw a sighting, or reverse that withdrawal.
  *
  * 'Dismissed' pulls it from every owner timeline and out of scoring;
  * 'Verified' is only how a dismissal is undone. Neither awards nor withdraws
- * ranking points — the owner's confirmation is what moves points (SRS-90).
+ * ranking points — the owner's confirmation is what moves points (SRS-88).
  */
 export function setSightingVerification(
   sightingId: string,

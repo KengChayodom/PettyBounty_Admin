@@ -68,7 +68,7 @@ export interface MissingPet {
 /**
  * One row of `sightings_for_pet` — the admin variant is called with
  * `p_include_dismissed = true`, so Dismissed entries are present here and
- * absent from the owner's copy of the same timeline (SRS-63).
+ * absent from the owner's copy of the same timeline (SRS-64).
  */
 export interface TimelineEntry {
   id: string
@@ -126,7 +126,7 @@ export interface ReviewFlagResult {
 }
 
 /**
- * Default deduction per flag reason — UD-14's Input Specification, mirrored
+ * Default deduction per flag reason — UD-16's Input Specification, mirrored
  * from `moderation_logic.PENALTY_POINTS_BY_REASON`. Shown as the pre-filled
  * value in the uphold dialog; the administrator may override it within 0-100.
  */
