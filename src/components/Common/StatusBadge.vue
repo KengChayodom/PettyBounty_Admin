@@ -28,6 +28,9 @@ const TONES: Record<string, string> = {
   Rejected: 'border-rose-500',
   // action_type
   Caught: 'border-orange-500',
+  // user_role
+  admin: 'border-violet-500',
+  user: 'border-stone-400',
 }
 
 const LABELS: Record<string, string> = {

@@ -49,7 +49,7 @@ const referenceNo = ref('')
 const confirmOpen = ref(false)
 const busy = ref(false)
 
-/** Only the owner-confirmed catch can take the bounty (SRS-84 → resolve). */
+/** Only the owner-confirmed catch can take the bounty (SRS-86 → resolve). */
 const eligible = computed(() =>
   timeline.value.filter(
     (entry) =>

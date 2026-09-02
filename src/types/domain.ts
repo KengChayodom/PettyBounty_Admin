@@ -31,7 +31,7 @@ export type OwnerDecision = 'Pending' | 'Confirmed' | 'Rejected'
 export type FlagReason = 'Spam' | 'Not_a_pet' | 'Inappropriate_image'
 export type FlagStatus = 'Pending' | 'Reviewed_Penalty' | 'Dismissed'
 
-/** The two terminal states an administrator can write onto a flag (SRS-68). */
+/** The two terminal states an administrator can write onto a flag (SRS-73). */
 export type FlagDecision = 'Dismissed' | 'Reviewed_Penalty'
 
 export interface UserProfile {
@@ -68,7 +68,7 @@ export interface MissingPet {
 /**
  * One row of `sightings_for_pet` — the admin variant is called with
  * `p_include_dismissed = true`, so Dismissed entries are present here and
- * absent from the owner's copy of the same timeline (SRS-64).
+ * absent from the owner's copy of the same timeline (SRS-69).
  */
 export interface TimelineEntry {
   id: string
@@ -142,4 +142,35 @@ export const FLAG_REASON_LABEL: Record<FlagReason, string> = {
   Spam: 'Spam',
   Not_a_pet: 'Not a pet',
   Inappropriate_image: 'Inappropriate image',
+}
+
+// ── Role management (SRS-94–98) ─────────────────────────────────────────
+
+/** GET /admin/users/lookup — one account at a time, by exact email. */
+export interface AccountLookup {
+  id: string
+  display_name: string
+  role: UserRole
+}
+
+/** PATCH /admin/users/{id}/role — the result of a role assignment attempt. */
+export interface RoleAssignmentResult {
+  changed: boolean
+  /** Present only when `changed` is true — the audit row id. */
+  role_change_id?: string
+  id: string
+  display_name: string
+  role_before: UserRole
+  role_after: UserRole
+}
+
+/** One row of GET /admin/role-changes. */
+export interface RoleChange {
+  id: string
+  target_user_id: string
+  /** Null when the admin who made this change has since been deleted. */
+  changed_by: string | null
+  role_before: UserRole
+  role_after: UserRole
+  created_at: string
 }

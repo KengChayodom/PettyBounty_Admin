@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The moderation queue — SRS-67/68/80, UD-15, UD-16.
+ * The moderation queue — SRS-72/73/82, UD-15, UD-16.
  *
  * A flag row names the *reporter* and the sighting id, never the photo, so the
  * sighting behind the selected flag is fetched separately: an administrator
@@ -139,7 +139,7 @@ async function uphold(points: number) {
   }
 }
 
-/** SRS-80 / UD-16 — moderate the sighting itself, independent of the flag. */
+/** SRS-82 / UD-16 — moderate the sighting itself, independent of the flag. */
 async function moderateSighting(status: 'Verified' | 'Dismissed') {
   const target = sighting.value
   if (!target) return
@@ -311,7 +311,7 @@ onMounted(loadQueue)
             This flag was already decided. Its sighting can still be moderated below.
           </p>
 
-          <!-- SRS-80: the sighting's own moderation state, independent of the flag. -->
+          <!-- SRS-82: the sighting's own moderation state, independent of the flag. -->
           <div
             v-if="sighting"
             class="mt-4 flex flex-wrap items-center gap-2 border-t border-stone-100 pt-4"
