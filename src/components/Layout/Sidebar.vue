@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BadgeDollarSign, LayoutDashboard, LogOut, PawPrint, ShieldAlert, X } from 'lucide-vue-next'
+import { BadgeDollarSign, KeyRound, LayoutDashboard, LogOut, PawPrint, ShieldAlert, X } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -11,15 +11,17 @@ const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
 
-// One entry per duty an administrator actually has. Account management is
-// deliberately absent: nobody is suspended or banned here — an upheld flag
-// deducts score instead (2026-08-20), and the owner, not the administrator,
-// decides whether a sighting shows their pet (2026-08-21).
+// One entry per duty an administrator actually has. Account suspension,
+// ban, and deletion are deliberately absent: an upheld flag deducts score
+// instead (2026-08-20), the owner decides sighting matches (2026-08-21),
+// and role management (SRS-94–98, 2026-09-02) is scoped to granting and
+// revoking console access — not listing or searching accounts.
 const navItems = [
   { name: 'Overview', desc: 'Platform pulse', icon: LayoutDashboard, path: '/' },
   { name: 'Missing pets', desc: 'Reports & timelines', icon: PawPrint, path: '/missing-pets' },
   { name: 'Reviews', desc: 'Flagged sightings', icon: ShieldAlert, path: '/reviews' },
-  { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
+  // { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
+  { name: 'Roles', desc: 'Console access', icon: KeyRound, path: '/roles' },
 ]
 
 async function signOut() {

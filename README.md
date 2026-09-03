@@ -10,19 +10,19 @@ The scope is **content moderation and money**, and it is deliberately narrow:
 | Screen | Does | Requirement |
 |---|---|---|
 | Overview | Queue depth, cases awaiting payout, active searches | — |
-| Missing pets | Browse every report, read its full sighting timeline (dismissed entries included), remove one that breaks the guidelines | SRS-63, SRS-64, SRS-66 |
-| Moderation | Work the flag queue: dismiss a flag, or uphold it — withdrawing the sighting and deducting the hunter's score | SRS-67, SRS-68, SRS-82 |
+| Missing pets | Browse every report, read its full sighting timeline (dismissed entries included), remove one that breaks the guidelines | SRS-69, SRS-71, SRS-70 |
+| Moderation | Work the flag queue: dismiss a flag, or uphold it — withdrawing the sighting and deducting the hunter's score | SRS-72, SRS-73, SRS-82 |
 | Bounty | Record the transfer against the owner-confirmed catch, moving the report Found → Resolved | `POST /admin/missing-pets/{id}/resolve` |
 
 Two powers this console does **not** have, both by decision rather than omission:
 
-- **No account management.** Nobody is banned, suspended, or deactivated. SRS-71 to SRS-73
+- **No account management.** Nobody is banned, suspended, or deactivated. SRS-53 to SRS-76
   and UD-17 were struck on 2026-08-21; the sanction for an abusive hunter is the bounded,
   audited score deduction above (`score_penalties`).
 - **No sighting adjudication.** Whether a photograph shows a particular animal is a
   question only that animal's owner can answer, so the Pet Owner confirms or rejects each
   sighting and closes their own search — which is also what distributes the ranking points
-  (SRS-90). `verification_status` survives here purely as moderation: 'Dismissed' withdraws
+  (SRS-86, SRS-90). `verification_status` survives here purely as moderation: 'Dismissed' withdraws
   a sighting, and 'Verified' exists only to reverse that.
 
 ## Architecture

@@ -84,9 +84,6 @@ async function submit() {
           {{ busy ? 'Signing in…' : 'Sign in' }}
         </button>
 
-        <p class="mt-4 text-center text-xs text-stone-400">
-          Administrator accounts only — <code>users.role</code> is checked server-side.
-        </p>
       </form>
     </div>
   </div>

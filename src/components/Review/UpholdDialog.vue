@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The uphold ruling — UD-14 steps 2, 4 and 5.
+ * The uphold ruling — UD-16 steps 2, 4 and 5.
  *
  * The field opens on the per-reason default and stays editable within 0-100:
  * the cap keeps a mistyped extra digit from wiping a hunter's history, and 0 is

@@ -1,15 +1,17 @@
 /**
  * The admin surface of FastAPI, one function per route.
  *
- * Scope note (decided 2026-08-20, narrowed 2026-08-21 — see
- * `services/admin_service.py`): an administrator moderates and settles money.
- * They do NOT adjudicate whether a photograph shows a particular pet — the
- * owner does that — and they do not suspend or ban accounts. The sanction for
- * an upheld flag is a score deduction. There is intentionally no user-account
- * endpoint for this console to call.
+ * Scope note (decided 2026-08-20, narrowed 2026-08-21, widened 2026-09-02 —
+ * see `services/admin_service.py`): an administrator moderates, settles money,
+ * and grants or revokes console access (SRS-94–98). They do NOT adjudicate
+ * whether a photograph shows a particular pet — the owner does that — and they
+ * do not suspend, ban, or delete accounts. The sanction for an upheld flag is
+ * a score deduction. There is no endpoint that lists or searches user accounts;
+ * role lookup is by exact email, one account at a time.
  */
 import { request } from './http'
 import type {
+  AccountLookup,
   Flag,
   FlagDecision,
   FlagStatus,
@@ -18,8 +20,11 @@ import type {
   PetSpecies,
   PetStatus,
   ReviewFlagResult,
+  RoleAssignmentResult,
+  RoleChange,
   Sighting,
   TimelineEntry,
+  UserRole,
   VerificationStatus,
 } from '@/types/domain'
 
@@ -29,7 +34,7 @@ export interface Page {
 }
 
 /**
- * SRS-64 / UD-14 step 1 — browse every report on the platform.
+ * SRS-71 / UD-14 step 1 — browse every report on the platform.
  *
  * The backend counts the rows matching `status` and returns that count with
  * the page, so paging here is server-side in both directions: the window is
@@ -52,7 +57,7 @@ export function fetchMissingPet(petId: string): Promise<MissingPet> {
 }
 
 /**
- * SRS-66 / UD-14 step 7 — remove a report that breaks the guidelines.
+ * SRS-70 / UD-14 step 2 — remove a report that breaks the guidelines.
  *
  * A hard delete: UD-14's postcondition is "removed from the database and the
  * search map", and the backend cascades to `sighting_matches`. There is no undo.
@@ -61,7 +66,7 @@ export function removeMissingPet(petId: string): Promise<MissingPet> {
   return request<MissingPet>(`/admin/missing-pets/${petId}`, { method: 'DELETE' })
 }
 
-/** SRS-63 / UD-13 — the full timeline, Dismissed entries included. */
+/** SRS-69 / UD-13 — the full timeline, Dismissed entries included. */
 export function fetchSightingTimeline(petId: string, page: Page): Promise<TimelineEntry[]> {
   return request<TimelineEntry[]>(`/admin/missing-pets/${petId}/sighting-timeline`, {
     query: { limit: page.limit, offset: page.offset },
@@ -69,7 +74,7 @@ export function fetchSightingTimeline(petId: string, page: Page): Promise<Timeli
 }
 
 /**
- * SRS-67 — the moderation queue. `status` omitted means every status.
+ * SRS-72 — the moderation queue. `status` omitted means every status.
  *
  * `total` is the depth of the queue for that filter, which is the number a
  * moderator actually works against.
@@ -81,7 +86,7 @@ export function listFlags(page: Page, status?: FlagStatus | null): Promise<Pagin
 }
 
 /**
- * SRS-68 / UD-14 — decide a flag.
+ * SRS-73 / UD-16 — decide a flag.
  *
  * Upholding dismisses the flagged sighting and deducts score from the hunter
  * who submitted it; `penaltyPoints` overrides the per-reason default and 0
@@ -105,7 +110,7 @@ export function reviewFlag(
 }
 
 /**
- * SRS-82 / UD-19 — withdraw a sighting, or reverse that withdrawal.
+ * SRS-82 / UD-16 — withdraw a sighting, or reverse that withdrawal.
  *
  * 'Dismissed' pulls it from every owner timeline and out of scoring;
  * 'Verified' is only how a dismissal is undone. Neither awards nor withdraws
@@ -142,4 +147,48 @@ export interface SettleBountyInput {
  */
 export function settleBounty(petId: string, input: SettleBountyInput): Promise<unknown> {
   return request(`/admin/missing-pets/${petId}/resolve`, { method: 'POST', body: input })
+}
+
+// ── Role management (SRS-94–98) ─────────────────────────────────────────
+
+/**
+ * SRS-94 / UD-23 step 1 — find one account by its exact email address.
+ *
+ * There is no listing or search of all user accounts; the administrator must
+ * know who they are looking for. The admin set below is the only listing.
+ */
+export function findUserByEmail(email: string): Promise<AccountLookup> {
+  return request<AccountLookup>('/admin/users/lookup', { query: { email } })
+}
+
+/** Every account currently holding the admin role (always a small set). */
+export function listAdmins(): Promise<AccountLookup[]> {
+  return request<AccountLookup[]>('/admin/users/admins')
+}
+
+/**
+ * SRS-95 / UD-23 step 4 — grant or revoke administrator access.
+ *
+ * 409 when the operator tries to drop their own access or would remove the
+ * last administrator. `changed: false` when the role is already the one
+ * requested — this is not an error and produces no audit row.
+ */
+export function assignUserRole(
+  targetUserId: string,
+  role: UserRole,
+): Promise<RoleAssignmentResult> {
+  return request<RoleAssignmentResult>(`/admin/users/${targetUserId}/role`, {
+    method: 'PATCH',
+    body: { role },
+  })
+}
+
+/** SRS-97 — paginated audit trail of every role change. */
+export function listRoleChanges(
+  page: Page,
+  targetUserId?: string | null,
+): Promise<Paginated<RoleChange>> {
+  return request<Paginated<RoleChange>>('/admin/role-changes', {
+    query: { limit: page.limit, offset: page.offset, target_user_id: targetUserId },
+  })
 }

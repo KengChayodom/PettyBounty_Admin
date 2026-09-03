@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * SRS-63 / UD-13 — every sighting logged against one report, newest first,
+ * SRS-69 / UD-13 — every sighting logged against one report, newest first,
  * Dismissed entries included. The owner's copy of this list hides those; the
  * administrator's must not, or moderation would be invisible to the person
  * doing it.
  *
  * Each row also carries the SRS-82 controls, because the timeline is the other
- * place UD-19 says a sighting is moderated from.
+ * place UD-16 says a sighting is moderated from.
  */
 import DataState from '@/components/Common/DataState.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
