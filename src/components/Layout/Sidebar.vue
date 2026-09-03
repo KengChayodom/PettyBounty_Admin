@@ -20,7 +20,7 @@ const navItems = [
   { name: 'Overview', desc: 'Platform pulse', icon: LayoutDashboard, path: '/' },
   { name: 'Missing pets', desc: 'Reports & timelines', icon: PawPrint, path: '/missing-pets' },
   { name: 'Reviews', desc: 'Flagged sightings', icon: ShieldAlert, path: '/reviews' },
-  { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
+  // { name: 'Bounty', desc: 'Settle payouts', icon: BadgeDollarSign, path: '/bounty' },
   { name: 'Roles', desc: 'Console access', icon: KeyRound, path: '/roles' },
 ]
 
