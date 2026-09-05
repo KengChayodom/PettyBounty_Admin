@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Role management — SRS-94–98, UD-23.
+ * Role management — UD-23.
  *
  * This screen grants and revokes console access. It is NOT account
  * management: there is no account listing, no search of the user base, no
@@ -160,7 +160,7 @@ const confirmLabel = computed(() =>
   <PageHeader
     title="Roles"
     subtitle="Grant and revoke administrator access to this console."
-    requirement="SRS-94–98 · UD-23"
+    requirement="SRS-93–98 · UD-23"
   />
 
   <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 xl:flex-row">

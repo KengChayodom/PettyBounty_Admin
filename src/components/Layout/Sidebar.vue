@@ -14,7 +14,7 @@ const auth = useAuthStore()
 // One entry per duty an administrator actually has. Account suspension,
 // ban, and deletion are deliberately absent: an upheld flag deducts score
 // instead (2026-08-20), the owner decides sighting matches (2026-08-21),
-// and role management (SRS-94–98, 2026-09-02) is scoped to granting and
+// and role management (2026-09-02) is scoped to granting and
 // revoking console access — not listing or searching accounts.
 const navItems = [
   { name: 'Overview', desc: 'Platform pulse', icon: LayoutDashboard, path: '/' },
