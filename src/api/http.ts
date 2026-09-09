@@ -126,7 +126,10 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   if (response.status === 204) return undefined as T
 
   const payload = (await response.json()) as StandardResponse<T> | T
-  // Most routes return the envelope; GET /sightings/{id}/matches does not.
+  // Most routes return the envelope. GET /sightings/{id}/matches was the
+  // exception until 2026-09-09 and now sends it too; GET
+  // /admin/missing-pets/{id} still answers with the bare report, so the
+  // fallback below stays.
   if (payload && typeof payload === 'object' && 'data' in payload && 'status' in payload) {
     return (payload as StandardResponse<T>).data
   }

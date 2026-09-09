@@ -77,7 +77,7 @@ async function signOut() {
     <div class="border-t border-white/10 p-4">
       <div class="mb-3 min-w-0 px-1">
         <p class="truncate text-sm font-medium">
-          {{ auth.profile?.display_name ?? 'Administrator' }}
+          {{ auth.profile?.username ?? 'Administrator' }}
         </p>
         <p class="text-[10px] tracking-widest text-gray-400 uppercase">Administrator</p>
       </div>

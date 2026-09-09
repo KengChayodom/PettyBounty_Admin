@@ -77,7 +77,7 @@ const emit = defineEmits<{
           </div>
 
           <p class="mt-1.5 text-sm text-stone-700">
-            {{ entry.hunter_display_name || shortId(entry.hunter_id) }}
+            {{ entry.hunter_username || shortId(entry.hunter_id) }}
             <span class="text-stone-400">· {{ entry.detected_species ?? 'unknown species' }}</span>
           </p>
           <p class="mt-0.5 font-mono text-[11px] text-stone-500">

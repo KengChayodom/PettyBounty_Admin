@@ -36,7 +36,7 @@ export type FlagDecision = 'Dismissed' | 'Reviewed_Penalty'
 
 export interface UserProfile {
   id: string
-  display_name: string
+  username: string
   phone: string | null
   role: UserRole
   total_score: number
@@ -72,7 +72,7 @@ export interface MissingPet {
 export interface TimelineEntry {
   id: string
   hunter_id: string
-  hunter_display_name: string | null
+  hunter_username: string | null
   image_url: string | null
   detected_species: PetSpecies | null
   action_type: ActionType
@@ -148,7 +148,7 @@ export const FLAG_REASON_LABEL: Record<FlagReason, string> = {
 /** GET /admin/users/lookup — one account at a time, by exact email. */
 export interface AccountLookup {
   id: string
-  display_name: string
+  username: string
   role: UserRole
 }
 
@@ -158,7 +158,7 @@ export interface RoleAssignmentResult {
   /** Present only when `changed` is true — the audit row id. */
   role_change_id?: string
   id: string
-  display_name: string
+  username: string
   role_before: UserRole
   role_after: UserRole
 }
