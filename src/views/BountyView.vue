@@ -49,7 +49,7 @@ const referenceNo = ref('')
 const confirmOpen = ref(false)
 const busy = ref(false)
 
-/** Only the owner-confirmed catch can take the bounty (SRS-86 → resolve). */
+/** Only the owner-confirmed catch can take the bounty (see resolve). */
 const eligible = computed(() =>
   timeline.value.filter(
     (entry) =>
@@ -235,7 +235,7 @@ onMounted(loadPets)
                 />
                 <div class="min-w-0 flex-1">
                   <p class="text-sm text-stone-800">
-                    {{ entry.hunter_display_name || shortId(entry.hunter_id) }}
+                    {{ entry.hunter_username || shortId(entry.hunter_id) }}
                   </p>
                   <p class="text-xs text-stone-500">{{ formatDateTime(entry.created_at) }}</p>
                 </div>

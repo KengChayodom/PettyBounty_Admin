@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Role management — SRS-94–98, UD-23.
+ * Role management — UD-23.
  *
  * This screen grants and revokes console access. It is NOT account
  * management: there is no account listing, no search of the user base, no
@@ -113,14 +113,14 @@ async function confirmRoleChange() {
     confirmOpen.value = false
 
     if (!result.changed) {
-      toasts.info(`${result.display_name} already holds the "${result.role_after}" role. Nothing changed.`)
+      toasts.info(`${result.username} already holds the "${result.role_after}" role. Nothing changed.`)
       return
     }
 
     toasts.success(
       result.role_after === 'admin'
-        ? `${result.display_name} is now an administrator.`
-        : `Administrator access withdrawn from ${result.display_name}.`,
+        ? `${result.username} is now an administrator.`
+        : `Administrator access withdrawn from ${result.username}.`,
     )
 
     // Update the lookup card if it was the source of this action.
@@ -146,7 +146,7 @@ const confirmTitle = computed(() =>
   pendingRole.value === 'admin' ? 'Grant administrator access' : 'Withdraw administrator access',
 )
 const confirmMessage = computed(() => {
-  const name = pendingAccount.value?.display_name ?? 'this account'
+  const name = pendingAccount.value?.username ?? 'this account'
   return pendingRole.value === 'admin'
     ? `${name} will be able to sign into this console and moderate content, settle bounties, and manage roles.`
     : `${name} will lose access to this console immediately. If they are signed in, their next request will end their session.`
@@ -160,7 +160,7 @@ const confirmLabel = computed(() =>
   <PageHeader
     title="Roles"
     subtitle="Grant and revoke administrator access to this console."
-    requirement="SRS-94–98 · UD-23"
+    requirement="SRS-93–98 · UD-23"
   />
 
   <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 xl:flex-row">
@@ -207,7 +207,7 @@ const confirmLabel = computed(() =>
           <div class="rounded-xl border border-stone-200 bg-stone-50 p-4">
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="text-base font-semibold text-stone-900">{{ account.display_name }}</p>
+                <p class="text-base font-semibold text-stone-900">{{ account.username }}</p>
                 <p class="mt-0.5 font-mono text-xs text-stone-500">{{ emailInput.trim() }}</p>
                 <p class="mt-0.5 font-mono text-[11px] text-stone-400">{{ shortId(account.id) }}</p>
               </div>
@@ -279,7 +279,7 @@ const confirmLabel = computed(() =>
             class="flex items-center justify-between gap-3 px-4 py-3"
           >
             <div class="min-w-0">
-              <p class="text-sm font-medium text-stone-900">{{ admin.display_name }}</p>
+              <p class="text-sm font-medium text-stone-900">{{ admin.username }}</p>
               <p class="font-mono text-[11px] text-stone-400">{{ shortId(admin.id) }}</p>
               <p
                 v-if="admin.id === auth.profile?.id"

@@ -3,7 +3,7 @@
  *
  * Scope note (decided 2026-08-20, narrowed 2026-08-21, widened 2026-09-02 —
  * see `services/admin_service.py`): an administrator moderates, settles money,
- * and grants or revokes console access (SRS-94–98). They do NOT adjudicate
+ * and grants or revokes console access (SRS-93–98). They do NOT adjudicate
  * whether a photograph shows a particular pet — the owner does that — and they
  * do not suspend, ban, or delete accounts. The sanction for an upheld flag is
  * a score deduction. There is no endpoint that lists or searches user accounts;
@@ -34,7 +34,7 @@ export interface Page {
 }
 
 /**
- * SRS-71 / UD-14 step 1 — browse every report on the platform.
+ * SRS-70 / UD-14 step 1 — browse every report on the platform.
  *
  * The backend counts the rows matching `status` and returns that count with
  * the page, so paging here is server-side in both directions: the window is
@@ -57,7 +57,7 @@ export function fetchMissingPet(petId: string): Promise<MissingPet> {
 }
 
 /**
- * SRS-70 / UD-14 step 2 — remove a report that breaks the guidelines.
+ * SRS-69 / UD-14 step 2 — remove a report that breaks the guidelines.
  *
  * A hard delete: UD-14's postcondition is "removed from the database and the
  * search map", and the backend cascades to `sighting_matches`. There is no undo.
@@ -66,7 +66,7 @@ export function removeMissingPet(petId: string): Promise<MissingPet> {
   return request<MissingPet>(`/admin/missing-pets/${petId}`, { method: 'DELETE' })
 }
 
-/** SRS-69 / UD-13 — the full timeline, Dismissed entries included. */
+/** SRS-68 / UD-13 — the full timeline, Dismissed entries included. */
 export function fetchSightingTimeline(petId: string, page: Page): Promise<TimelineEntry[]> {
   return request<TimelineEntry[]>(`/admin/missing-pets/${petId}/sighting-timeline`, {
     query: { limit: page.limit, offset: page.offset },
@@ -74,7 +74,7 @@ export function fetchSightingTimeline(petId: string, page: Page): Promise<Timeli
 }
 
 /**
- * SRS-72 — the moderation queue. `status` omitted means every status.
+ * SRS-71 — the moderation queue. `status` omitted means every status.
  *
  * `total` is the depth of the queue for that filter, which is the number a
  * moderator actually works against.
@@ -86,7 +86,7 @@ export function listFlags(page: Page, status?: FlagStatus | null): Promise<Pagin
 }
 
 /**
- * SRS-73 / UD-16 — decide a flag.
+ * SRS-72 / UD-16 — decide a flag.
  *
  * Upholding dismisses the flagged sighting and deducts score from the hunter
  * who submitted it; `penaltyPoints` overrides the per-reason default and 0
@@ -110,11 +110,11 @@ export function reviewFlag(
 }
 
 /**
- * SRS-82 / UD-16 — withdraw a sighting, or reverse that withdrawal.
+ * SRS-81 / UD-16 — withdraw a sighting, or reverse that withdrawal.
  *
  * 'Dismissed' pulls it from every owner timeline and out of scoring;
  * 'Verified' is only how a dismissal is undone. Neither awards nor withdraws
- * ranking points — the owner's confirmation is what moves points (SRS-90).
+ * ranking points — the owner's confirmation is what moves points (SRS-89).
  */
 export function setSightingVerification(
   sightingId: string,
@@ -149,10 +149,10 @@ export function settleBounty(petId: string, input: SettleBountyInput): Promise<u
   return request(`/admin/missing-pets/${petId}/resolve`, { method: 'POST', body: input })
 }
 
-// ── Role management (SRS-94–98) ─────────────────────────────────────────
+// ── Role management (SRS-93–98) ─────────────────────────────────────────
 
 /**
- * SRS-94 / UD-23 step 1 — find one account by its exact email address.
+ * SRS-93 / UD-23 step 1 — find one account by its exact email address.
  *
  * There is no listing or search of all user accounts; the administrator must
  * know who they are looking for. The admin set below is the only listing.

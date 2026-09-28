@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * SRS-71 / SRS-70 / SRS-69 — browse every report on the platform, read any
+ * Browse every report on the platform, read any
  * report's full sighting timeline, and remove one that breaks the guidelines.
  *
  * Removal is a hard delete with no undo (UD-14's postcondition is "removed from

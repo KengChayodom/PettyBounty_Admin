@@ -31,12 +31,12 @@ export type OwnerDecision = 'Pending' | 'Confirmed' | 'Rejected'
 export type FlagReason = 'Spam' | 'Not_a_pet' | 'Inappropriate_image'
 export type FlagStatus = 'Pending' | 'Reviewed_Penalty' | 'Dismissed'
 
-/** The two terminal states an administrator can write onto a flag (SRS-73). */
+/** The two terminal states an administrator can write onto a flag. */
 export type FlagDecision = 'Dismissed' | 'Reviewed_Penalty'
 
 export interface UserProfile {
   id: string
-  display_name: string
+  username: string
   phone: string | null
   role: UserRole
   total_score: number
@@ -62,18 +62,17 @@ export interface MissingPet {
   sighting_count?: number
   created_at: string
   primary_color_hex?: string | null
-  pattern_id?: string | null
 }
 
 /**
  * One row of `sightings_for_pet` — the admin variant is called with
  * `p_include_dismissed = true`, so Dismissed entries are present here and
- * absent from the owner's copy of the same timeline (SRS-69).
+ * absent from the owner's copy of the same timeline.
  */
 export interface TimelineEntry {
   id: string
   hunter_id: string
-  hunter_display_name: string | null
+  hunter_username: string | null
   image_url: string | null
   detected_species: PetSpecies | null
   action_type: ActionType
@@ -144,12 +143,12 @@ export const FLAG_REASON_LABEL: Record<FlagReason, string> = {
   Inappropriate_image: 'Inappropriate image',
 }
 
-// ── Role management (SRS-94–98) ─────────────────────────────────────────
+// ── Role management ─────────────────────────────────────────
 
 /** GET /admin/users/lookup — one account at a time, by exact email. */
 export interface AccountLookup {
   id: string
-  display_name: string
+  username: string
   role: UserRole
 }
 
@@ -159,7 +158,7 @@ export interface RoleAssignmentResult {
   /** Present only when `changed` is true — the audit row id. */
   role_change_id?: string
   id: string
-  display_name: string
+  username: string
   role_before: UserRole
   role_after: UserRole
 }

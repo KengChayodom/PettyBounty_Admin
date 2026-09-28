@@ -1,11 +1,11 @@
 <script setup lang="ts">
 /**
- * SRS-69 / UD-13 — every sighting logged against one report, newest first,
+ * UD-13 — every sighting logged against one report, newest first,
  * Dismissed entries included. The owner's copy of this list hides those; the
  * administrator's must not, or moderation would be invisible to the person
  * doing it.
  *
- * Each row also carries the SRS-82 controls, because the timeline is the other
+ * Each row also carries the sighting-moderation controls, because the timeline is the other
  * place UD-16 says a sighting is moderated from.
  */
 import DataState from '@/components/Common/DataState.vue'
@@ -77,7 +77,7 @@ const emit = defineEmits<{
           </div>
 
           <p class="mt-1.5 text-sm text-stone-700">
-            {{ entry.hunter_display_name || shortId(entry.hunter_id) }}
+            {{ entry.hunter_username || shortId(entry.hunter_id) }}
             <span class="text-stone-400">· {{ entry.detected_species ?? 'unknown species' }}</span>
           </p>
           <p class="mt-0.5 font-mono text-[11px] text-stone-500">
