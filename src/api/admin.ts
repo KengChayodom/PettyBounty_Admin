@@ -131,7 +131,7 @@ export function fetchSighting(sightingId: string): Promise<Sighting> {
   return request<Sighting>(`/sightings/${sightingId}`)
 }
 
-// ── Bounty rulings (Feature 6: SRS-114, 116, 117) ──────────────────────
+// ── Bounty rulings (Feature 6) ─────────────────────────────────────────
 
 /** What brought a case to the queue. */
 export type BountyQueueKind = 'disputed' | 'unconfirmed' | 'unpaid' | 'rejected_unpaid'
@@ -152,13 +152,13 @@ export interface BountyQueueEntry {
   since: string
 }
 
-/** SRS-114: disputed payments, payments unconfirmed past the dispute window,
+/** SRS-110: disputed payments, payments unconfirmed past the dispute window,
  * reports referred as unpaid, and rejections not paid again. */
 export function listBountyQueue(): Promise<BountyQueueEntry[]> {
   return request<BountyQueueEntry[]>('/admin/bounty-queue')
 }
 
-/** SRS-116: confirm (the report becomes Resolved) or reject (the owner pays again). */
+/** SRS-111: confirm (the report becomes Resolved) or reject (the owner pays again). */
 export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reject'): Promise<unknown> {
   return request(`/admin/bounty-payments/${paymentId}/ruling`, {
     method: 'POST',
@@ -166,7 +166,7 @@ export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reje
   })
 }
 
-/** SRS-117: close an unpaid report as Resolved, recording that the bounty was not paid. */
+/** SRS-112: close an unpaid report as Resolved, recording that the bounty was not paid. */
 export function closeBountyUnpaid(petId: string): Promise<unknown> {
   return request(`/admin/missing-pets/${petId}/close-unpaid`, { method: 'POST' })
 }
