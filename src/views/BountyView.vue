@@ -4,13 +4,12 @@
  *
  * The owner pays the returning hunter directly by PromptPay and submits the
  * slip; the hunter confirms or disputes it. Only what the two could not settle
- * reaches this screen (SRS-114): a disputed payment, a payment the hunter left
+ * reaches this screen: a disputed payment, a payment the hunter left
  * unconfirmed past its three-day dispute window, a report the hunter referred
  * as unpaid, or a rejected payment the owner has not replaced in three days.
  *
- * A case with a payment is confirmed or rejected (SRS-116). A case without one
- * can only be closed as unpaid (SRS-117). The backend records who ruled and
- * when (SRS-119).
+ * A case with a payment is confirmed or rejected. A case without one can only
+ * be closed as unpaid. The backend records who ruled and when.
  */
 import { computed, onMounted, ref } from 'vue'
 import { BadgeCheck, Ban, ExternalLink, Loader2, XCircle } from 'lucide-vue-next'
@@ -146,7 +145,7 @@ onMounted(load)
   <PageHeader
     title="Bounty rulings"
     subtitle="Payments the owner and the hunter could not settle themselves."
-    requirement="SRS-114 · SRS-116 · SRS-117"
+    requirement="SRS-110 · SRS-111 · SRS-112"
   />
 
   <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 xl:flex-row">
