@@ -7,13 +7,13 @@
  * That is why the three requests ask for five rows each: the tile needs the
  * count, and the panels below only ever show the newest few.
  */
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { BadgeDollarSign, Flag, PawPrint, ShieldAlert } from 'lucide-vue-next'
 import DataState from '@/components/Common/DataState.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
-import { listFlags, listMissingPets } from '@/api/admin'
+import { listBountyQueue, listFlags, listMissingPets } from '@/api/admin'
 import { formatBounty, formatRelative, shortId } from '@/utils/format'
 import type { Flag as FlagRow, MissingPet } from '@/types/domain'
 
@@ -24,33 +24,27 @@ const pendingFlags = ref<FlagRow[]>([])
 const awaitingPayout = ref<MissingPet[]>([])
 const flagCount = ref(0)
 const searchingCount = ref(0)
-const payoutCount = ref(0)
+/** Cases in the bounty ruling queue: what the /bounty page lists. */
+const rulingCount = ref(0)
 const loading = ref(true)
 const error = ref<string | null>(null)
 
-/**
- * Only the bounties on this page are summed, so the figure is exact while the
- * settlement queue fits in one preview and understates it otherwise. The tile
- * says which of the two it is rather than presenting a partial sum as a total.
- */
-const bountyOnPage = computed(() =>
-  awaitingPayout.value.reduce((sum, pet) => sum + Number(pet.bounty_amount ?? 0), 0),
-)
 
 async function load() {
   loading.value = true
   error.value = null
   try {
-    const [flags, active, found] = await Promise.all([
+    const [flags, active, found, rulings] = await Promise.all([
       listFlags({ limit: PREVIEW, offset: 0 }, 'Pending'),
       listMissingPets({ limit: 1, offset: 0 }, 'Searching'),
       listMissingPets({ limit: PREVIEW, offset: 0 }, 'Found'),
+      listBountyQueue(),
     ])
     pendingFlags.value = flags.items
     flagCount.value = flags.total
     searchingCount.value = active.total
     awaitingPayout.value = found.items
-    payoutCount.value = found.total
+    rulingCount.value = rulings.length
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : 'Failed to load the dashboard.'
   } finally {
@@ -93,17 +87,10 @@ onMounted(load)
           class="rounded-2xl border border-stone-200 bg-white p-5 transition-colors hover:border-orange-300"
         >
           <div class="flex items-center gap-2 text-stone-500">
-            <BadgeDollarSign :size="16" /><span class="text-xs font-medium">Awaiting payout</span>
+            <BadgeDollarSign :size="16" /><span class="text-xs font-medium">Bounty rulings</span>
           </div>
-          <p class="mt-2 text-3xl font-bold text-stone-900">{{ payoutCount }}</p>
-          <p class="mt-1 text-xs text-stone-400">
-            {{ formatBounty(bountyOnPage) }}
-            {{
-              payoutCount > awaitingPayout.length
-                ? 'on the newest ' + awaitingPayout.length
-                : 'outstanding'
-            }}
-          </p>
+          <p class="mt-2 text-3xl font-bold text-stone-900">{{ rulingCount }}</p>
+          <p class="mt-1 text-xs text-stone-400">Disputed, unconfirmed or unpaid</p>
         </RouterLink>
 
         <RouterLink
@@ -151,7 +138,7 @@ onMounted(load)
 
         <section class="rounded-2xl border border-stone-200 bg-white">
           <h2 class="border-b border-stone-200 px-5 py-3 text-sm font-semibold text-stone-700">
-            Cases waiting on the transfer
+            Cases the owner and hunter are settling
           </h2>
           <ul v-if="awaitingPayout.length" class="divide-y divide-stone-100">
             <li
@@ -163,7 +150,7 @@ onMounted(load)
               <span class="text-sm text-stone-600">{{ formatBounty(pet.bounty_amount) }}</span>
             </li>
           </ul>
-          <p v-else class="px-5 py-6 text-sm text-stone-500">Nothing to pay out.</p>
+          <p v-else class="px-5 py-6 text-sm text-stone-500">No case is waiting on a payment.</p>
         </section>
       </div>
     </DataState>

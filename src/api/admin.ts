@@ -12,6 +12,7 @@
 import { request } from './http'
 import type {
   AccountLookup,
+  BountyTransaction,
   Flag,
   FlagDecision,
   FlagStatus,
@@ -24,6 +25,7 @@ import type {
   RoleChange,
   Sighting,
   TimelineEntry,
+  TransactionStatus,
   UserRole,
   VerificationStatus,
 } from '@/types/domain'
@@ -131,22 +133,61 @@ export function fetchSighting(sightingId: string): Promise<Sighting> {
   return request<Sighting>(`/sightings/${sightingId}`)
 }
 
-export interface SettleBountyInput {
-  final_sighting_id: string
-  slip_image_url: string
-  reference_no?: string | null
+// ── Bounty rulings (Feature 6) ─────────────────────────────────────────
+
+/** What brought a case to the queue. */
+export type BountyQueueKind = 'disputed' | 'unconfirmed' | 'unpaid' | 'rejected_unpaid'
+
+/** One case the owner and the returning hunter could not settle themselves. */
+export interface BountyQueueEntry {
+  kind: BountyQueueKind
+  /** Set for `disputed` and `unconfirmed`; null for the two unpaid kinds. */
+  payment_id: string | null
+  pet_id: string
+  pet_name: string
+  owner_id: string
+  hunter_id: string | null
+  amount: number | string
+  slip_image_url: string | null
+  reference_no: string | null
+  /** When the case reached the queue; the list is oldest first. */
+  since: string
 }
 
-/**
- * Settle the bounty on a case the OWNER has already closed.
- *
- * Precondition is `status = 'Found'`; the nominated sighting must be the
- * owner-confirmed Caught one. Awards no points — those were distributed when
- * the owner confirmed the rescue, possibly days earlier. 400 on every
- * violation of that sequence.
- */
-export function settleBounty(petId: string, input: SettleBountyInput): Promise<unknown> {
-  return request(`/admin/missing-pets/${petId}/resolve`, { method: 'POST', body: input })
+/** SRS-110: disputed payments, payments unconfirmed past the dispute window,
+ * reports referred as unpaid, and rejections not paid again. */
+export function listBountyQueue(): Promise<BountyQueueEntry[]> {
+  return request<BountyQueueEntry[]>('/admin/bounty-queue')
+}
+
+/** SRS-111: confirm (the report becomes Resolved) or reject (the owner pays again). */
+export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reject'): Promise<unknown> {
+  return request(`/admin/bounty-payments/${paymentId}/ruling`, {
+    method: 'POST',
+    body: { decision },
+  })
+}
+
+/** SRS-112: close an unpaid report as Resolved, recording that the bounty was not paid. */
+export function closeBountyUnpaid(petId: string): Promise<unknown> {
+  return request(`/admin/missing-pets/${petId}/close-unpaid`, { method: 'POST' })
+}
+
+/** Payout records, newest first. 'Pending_Verification' is the owners' slip queue. */
+export function listBountyTransactions(
+  page: Page,
+  status?: TransactionStatus | null,
+): Promise<Paginated<BountyTransaction>> {
+  return request<Paginated<BountyTransaction>>('/admin/bounty-transactions', {
+    query: { limit: page.limit, offset: page.offset, status },
+  })
+}
+
+/** Refuse an owner's slip. The case stays 'Found' and the owner can resend. */
+export function rejectBountyTransaction(transactionId: string): Promise<BountyTransaction> {
+  return request<BountyTransaction>(`/admin/bounty-transactions/${transactionId}/reject`, {
+    method: 'PATCH',
+  })
 }
 
 // ── Role management (SRS-93–98) ─────────────────────────────────────────
