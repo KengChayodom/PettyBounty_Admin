@@ -12,7 +12,6 @@
 import { request } from './http'
 import type {
   AccountLookup,
-  BountyTransaction,
   Flag,
   FlagDecision,
   FlagStatus,
@@ -25,7 +24,6 @@ import type {
   RoleChange,
   Sighting,
   TimelineEntry,
-  TransactionStatus,
   UserRole,
   VerificationStatus,
 } from '@/types/domain'
@@ -171,23 +169,6 @@ export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reje
 /** SRS-112: close an unpaid report as Resolved, recording that the bounty was not paid. */
 export function closeBountyUnpaid(petId: string): Promise<unknown> {
   return request(`/admin/missing-pets/${petId}/close-unpaid`, { method: 'POST' })
-}
-
-/** Payout records, newest first. 'Pending_Verification' is the owners' slip queue. */
-export function listBountyTransactions(
-  page: Page,
-  status?: TransactionStatus | null,
-): Promise<Paginated<BountyTransaction>> {
-  return request<Paginated<BountyTransaction>>('/admin/bounty-transactions', {
-    query: { limit: page.limit, offset: page.offset, status },
-  })
-}
-
-/** Refuse an owner's slip. The case stays 'Found' and the owner can resend. */
-export function rejectBountyTransaction(transactionId: string): Promise<BountyTransaction> {
-  return request<BountyTransaction>(`/admin/bounty-transactions/${transactionId}/reject`, {
-    method: 'PATCH',
-  })
 }
 
 // ── Role management (SRS-93–98) ─────────────────────────────────────────
