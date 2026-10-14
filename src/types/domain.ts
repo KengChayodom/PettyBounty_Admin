@@ -102,7 +102,7 @@ export interface TimelineEntry {
   match_source: 'matched' | 'targeted' | 'both'
 }
 
-/** A `sightings` row as returned by GET /sightings/{id} (vector stripped). */
+/** A `sightings` row as returned by GET /admin/sightings/{id} (vector stripped). */
 export interface Sighting {
   id: string
   hunter_id: string

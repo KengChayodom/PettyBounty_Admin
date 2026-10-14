@@ -128,9 +128,12 @@ export function setSightingVerification(
   })
 }
 
-/** The sighting behind a flag — the queue row names the reporter, not the photo. */
+/**
+ * The sighting behind a flag. The queue row names the reporter, not the photo.
+ * Read through the administrator route, which is the only single-sighting read.
+ */
 export function fetchSighting(sightingId: string): Promise<Sighting> {
-  return request<Sighting>(`/sightings/${sightingId}`)
+  return request<Sighting>(`/admin/sightings/${sightingId}`)
 }
 
 // ── Bounty rulings (Feature 6) ─────────────────────────────────────────
