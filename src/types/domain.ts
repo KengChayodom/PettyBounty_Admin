@@ -25,23 +25,6 @@ export interface Paginated<T> {
 export type UserRole = 'user' | 'admin'
 export type PetSpecies = 'Cat' | 'Dog' | 'Bird' | 'Other'
 export type PetStatus = 'Searching' | 'Spotted' | 'Found' | 'Resolved'
-export type TransactionStatus = 'Pending_Verification' | 'Verified' | 'Rejected'
-
-/** A `bounty_transactions` row. 'Pending_Verification' is a slip the owner sent. */
-export interface BountyTransaction {
-  id: string
-  sighting_id: string
-  missing_pet_id: string
-  owner_id: string | null
-  amount: number
-  slip_image_url: string
-  reference_no: string | null
-  status: TransactionStatus
-  created_at: string
-  verified_at: string | null
-  verified_by: string | null
-  missing_pets?: { pet_name: string; image_url: string | null; status: PetStatus } | null
-}
 export type ActionType = 'Spotted' | 'Caught'
 export type VerificationStatus = 'Pending' | 'Verified' | 'Dismissed'
 export type OwnerDecision = 'Pending' | 'Confirmed' | 'Rejected'
