@@ -100,7 +100,7 @@ function confirm() {
             :disabled="busy"
             @click="confirm"
           >
-            {{ busy ? 'Working…' : 'Uphold and deduct' }}
+            {{ busy ? 'Working…' : 'Uphold and Penalise User' }}
           </button>
         </div>
       </div>

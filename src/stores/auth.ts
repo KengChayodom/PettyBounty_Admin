@@ -82,7 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
     if (profile.value.role !== 'admin') {
       clear()
-      throw new AuthError('Access denied: admin privileges required.')
+      throw new AuthError('Access Denied: Admin privileges required')
     }
   }
 

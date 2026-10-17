@@ -8,6 +8,7 @@ import StatusBadge from '@/components/Common/StatusBadge.vue'
 import MiniMap from '@/components/Common/MiniMap.vue'
 import PetTimeline from '@/components/Pets/PetTimeline.vue'
 import { fetchMissingPet, fetchSightingTimeline, removeMissingPet, setSightingVerification } from '@/api/admin'
+import { ApiError, DATABASE_ERROR, isServerFailure } from '@/api/http'
 import { useToastStore } from '@/stores/toast'
 import { formatBounty, formatDateTime, shortId, parseLocationStr } from '@/utils/format'
 import type { MissingPet, TimelineEntry } from '@/types/domain'
@@ -53,7 +54,9 @@ async function loadTimeline() {
   try {
     timeline.value = await fetchSightingTimeline(petId.value, TIMELINE_PAGE)
   } catch (cause) {
-    timelineError.value = cause instanceof Error ? cause.message : 'Failed to load the timeline.'
+    timelineError.value = isServerFailure(cause)
+      ? 'Connection error. Unable to retrieve timeline data.'
+      : (cause as Error).message
   } finally {
     timelineLoading.value = false
   }
@@ -70,7 +73,7 @@ async function moderate(sightingId: string, status: 'Verified' | 'Dismissed') {
     )
     await loadTimeline()
   } catch (cause) {
-    toasts.error(cause instanceof Error ? cause.message : 'The action failed.')
+    toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
   } finally {
     busy.value = false
   }
@@ -81,11 +84,18 @@ async function confirmRemove() {
   busy.value = true
   try {
     await removeMissingPet(pet.value.id)
-    toasts.success(`"${pet.value.pet_name}" removed from the database and the search map.`)
+    toasts.success('Report removed')
     removeOpen.value = false
     router.replace('/missing-pets')
   } catch (cause) {
-    toasts.error(cause instanceof Error ? cause.message : 'Failed to remove the report.')
+    if (cause instanceof ApiError && cause.status === 404) {
+      // Report Already Removed: another administrator got there first.
+      toasts.error('This report no longer exists')
+      removeOpen.value = false
+      router.replace('/missing-pets')
+      return
+    }
+    toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
   } finally {
     busy.value = false
   }

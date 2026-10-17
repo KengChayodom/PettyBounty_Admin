@@ -99,7 +99,7 @@ const emit = defineEmits<{
               :disabled="busy"
               @click="emit('moderate', entry.id, 'Dismissed')"
             >
-              Withdraw
+              Dismiss
             </button>
             <button
               v-else
@@ -108,7 +108,7 @@ const emit = defineEmits<{
               :disabled="busy"
               @click="emit('moderate', entry.id, 'Verified')"
             >
-              Reverse dismissal
+              Restore
             </button>
           </div>
         </div>

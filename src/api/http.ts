@@ -35,6 +35,19 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * True when the request never reached a working server: the network failed or
+ * the server answered 5xx. A 4xx is the server refusing the request, and its
+ * message is shown as it is.
+ */
+export function isServerFailure(cause: unknown): boolean {
+  return !(cause instanceof ApiError) || cause.status === 0 || cause.status >= 500
+}
+
+/** What the console shows when a write could not reach a working server. */
+export const DATABASE_ERROR = 'Database error. Please try again later'
+
+
 export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
 
 /** Set by the auth store; read on every request so a logout takes effect at once. */
