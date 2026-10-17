@@ -2,7 +2,7 @@
 /**
  * Sign-in. Credentials go to Supabase Auth; the admin role comes back from
  * FastAPI (see `stores/auth`). A non-admin account authenticates successfully
- * and is still refused here, with UD-13/UD-14's wording: admin privileges
+ * and is still refused here, with the use cases' wording: admin privileges
  * required.
  */
 import { ref } from 'vue'

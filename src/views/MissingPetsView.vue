@@ -3,7 +3,7 @@
  * Browse every report on the platform, read any
  * report's full sighting timeline, and remove one that breaks the guidelines.
  *
- * Removal is a hard delete with no undo (UD-14's postcondition is "removed from
+ * Removal is a hard delete with no undo (the postcondition is "removed from
  * the database and the search map"), so it is the one action here behind a
  * confirmation naming the pet.
  */
