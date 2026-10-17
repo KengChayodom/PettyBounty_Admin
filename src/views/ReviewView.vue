@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The moderation queue — UD-15, UD-16.
+ * The moderation queue.
  *
  * A flag row names the *reporter* and the sighting id, never the photo, so the
  * sighting behind the selected flag is fetched separately: an administrator
@@ -139,7 +139,7 @@ async function uphold(points: number) {
   }
 }
 
-/** UD-16 — moderate the sighting itself, independent of the flag. */
+/** Moderate the sighting itself, independent of the flag. */
 async function moderateSighting(status: 'Verified' | 'Dismissed') {
   const target = sighting.value
   if (!target) return
@@ -160,7 +160,7 @@ async function moderateSighting(status: 'Verified' | 'Dismissed') {
 
 function reportFailure(cause: unknown) {
   if (cause instanceof ApiError && cause.isConflict) {
-    // UD-16 [E1] Action Conflict — another admin got there first.
+    // Action Conflict — another admin got there first.
     toasts.error('This flag has already been moderated. Refreshing the queue.')
     void loadQueue()
     return

@@ -3,7 +3,7 @@
  *
  * Scope note (decided 2026-08-20, narrowed 2026-08-21, widened 2026-09-02 —
  * see `services/admin_service.py`): an administrator moderates, settles money,
- * and grants or revokes console access (SRS-93–98). They do NOT adjudicate
+ * and grants or revokes console access. They do NOT adjudicate
  * whether a photograph shows a particular pet — the owner does that — and they
  * do not suspend, ban, or delete accounts. The sanction for an upheld flag is
  * a score deduction. There is no endpoint that lists or searches user accounts;
@@ -12,7 +12,6 @@
 import { request } from './http'
 import type {
   AccountLookup,
-  BountyTransaction,
   Flag,
   FlagDecision,
   FlagStatus,
@@ -25,7 +24,6 @@ import type {
   RoleChange,
   Sighting,
   TimelineEntry,
-  TransactionStatus,
   UserRole,
   VerificationStatus,
 } from '@/types/domain'
@@ -36,7 +34,7 @@ export interface Page {
 }
 
 /**
- * SRS-70 / UD-14 step 1 — browse every report on the platform.
+ * Browse every report on the platform.
  *
  * The backend counts the rows matching `status` and returns that count with
  * the page, so paging here is server-side in both directions: the window is
@@ -59,16 +57,16 @@ export function fetchMissingPet(petId: string): Promise<MissingPet> {
 }
 
 /**
- * SRS-69 / UD-14 step 2 — remove a report that breaks the guidelines.
+ * Remove a report that breaks the guidelines.
  *
- * A hard delete: UD-14's postcondition is "removed from the database and the
+ * A hard delete: the removal's postcondition is "removed from the database and the
  * search map", and the backend cascades to `sighting_matches`. There is no undo.
  */
 export function removeMissingPet(petId: string): Promise<MissingPet> {
   return request<MissingPet>(`/admin/missing-pets/${petId}`, { method: 'DELETE' })
 }
 
-/** SRS-68 / UD-13 — the full timeline, Dismissed entries included. */
+/** The full timeline, Dismissed entries included. */
 export function fetchSightingTimeline(petId: string, page: Page): Promise<TimelineEntry[]> {
   return request<TimelineEntry[]>(`/admin/missing-pets/${petId}/sighting-timeline`, {
     query: { limit: page.limit, offset: page.offset },
@@ -76,7 +74,7 @@ export function fetchSightingTimeline(petId: string, page: Page): Promise<Timeli
 }
 
 /**
- * SRS-71 — the moderation queue. `status` omitted means every status.
+ * The moderation queue. `status` omitted means every status.
  *
  * `total` is the depth of the queue for that filter, which is the number a
  * moderator actually works against.
@@ -88,7 +86,7 @@ export function listFlags(page: Page, status?: FlagStatus | null): Promise<Pagin
 }
 
 /**
- * SRS-72 / UD-16 — decide a flag.
+ * Decide a flag.
  *
  * Upholding dismisses the flagged sighting and deducts score from the hunter
  * who submitted it; `penaltyPoints` overrides the per-reason default and 0
@@ -112,11 +110,11 @@ export function reviewFlag(
 }
 
 /**
- * SRS-81 / UD-16 — withdraw a sighting, or reverse that withdrawal.
+ * Withdraw a sighting, or reverse that withdrawal.
  *
  * 'Dismissed' pulls it from every owner timeline and out of scoring;
  * 'Verified' is only how a dismissal is undone. Neither awards nor withdraws
- * ranking points — the owner's confirmation is what moves points (SRS-89).
+ * ranking points — the owner's confirmation is what moves points.
  */
 export function setSightingVerification(
   sightingId: string,
@@ -157,13 +155,13 @@ export interface BountyQueueEntry {
   since: string
 }
 
-/** SRS-110: disputed payments, payments unconfirmed past the dispute window,
+/** Disputed payments, payments unconfirmed past the dispute window,
  * reports referred as unpaid, and rejections not paid again. */
 export function listBountyQueue(): Promise<BountyQueueEntry[]> {
   return request<BountyQueueEntry[]>('/admin/bounty-queue')
 }
 
-/** SRS-111: confirm (the report becomes Resolved) or reject (the owner pays again). */
+/** Confirm (the report becomes Resolved) or reject (the owner pays again). */
 export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reject'): Promise<unknown> {
   return request(`/admin/bounty-payments/${paymentId}/ruling`, {
     method: 'POST',
@@ -171,32 +169,15 @@ export function ruleBountyPayment(paymentId: string, decision: 'Confirm' | 'Reje
   })
 }
 
-/** SRS-112: close an unpaid report as Resolved, recording that the bounty was not paid. */
+/** Close an unpaid report as Resolved, recording that the bounty was not paid. */
 export function closeBountyUnpaid(petId: string): Promise<unknown> {
   return request(`/admin/missing-pets/${petId}/close-unpaid`, { method: 'POST' })
 }
 
-/** Payout records, newest first. 'Pending_Verification' is the owners' slip queue. */
-export function listBountyTransactions(
-  page: Page,
-  status?: TransactionStatus | null,
-): Promise<Paginated<BountyTransaction>> {
-  return request<Paginated<BountyTransaction>>('/admin/bounty-transactions', {
-    query: { limit: page.limit, offset: page.offset, status },
-  })
-}
-
-/** Refuse an owner's slip. The case stays 'Found' and the owner can resend. */
-export function rejectBountyTransaction(transactionId: string): Promise<BountyTransaction> {
-  return request<BountyTransaction>(`/admin/bounty-transactions/${transactionId}/reject`, {
-    method: 'PATCH',
-  })
-}
-
-// ── Role management (SRS-93–98) ─────────────────────────────────────────
+// ── Role management ─────────────────────────────────────────
 
 /**
- * SRS-93 / UD-23 step 1 — find one account by its exact email address.
+ * Find one account by its exact email address.
  *
  * There is no listing or search of all user accounts; the administrator must
  * know who they are looking for. The admin set below is the only listing.
@@ -211,7 +192,7 @@ export function listAdmins(): Promise<AccountLookup[]> {
 }
 
 /**
- * SRS-95 / UD-23 step 4 — grant or revoke administrator access.
+ * Grant or revoke administrator access.
  *
  * 409 when the operator tries to drop their own access or would remove the
  * last administrator. `changed: false` when the role is already the one
@@ -227,7 +208,7 @@ export function assignUserRole(
   })
 }
 
-/** SRS-97 — paginated audit trail of every role change. */
+/** Paginated audit trail of every role change. */
 export function listRoleChanges(
   page: Page,
   targetUserId?: string | null,

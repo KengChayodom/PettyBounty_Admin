@@ -24,7 +24,7 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 
-  /** 409 — another admin already decided this flag (UD-16 [E1]). */
+  /** 409 — another admin already decided this flag. */
   get isConflict() {
     return this.status === 409
   }
@@ -113,7 +113,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     })
   } catch (cause) {
     // fetch only rejects for transport failures — the server being down, CORS,
-    // DNS. UD-13 [E1] / UD-14 [E1] both want this said plainly.
+    // DNS. The use cases want this said plainly.
     throw new ApiError(0, `Cannot reach the backend at ${API_BASE_URL}. Is uvicorn running?`)
   }
 
