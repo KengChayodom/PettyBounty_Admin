@@ -19,7 +19,7 @@ import Pagination from '@/components/Common/Pagination.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
 import SightingPanel from '@/components/Review/SightingPanel.vue'
 import UpholdDialog from '@/components/Review/UpholdDialog.vue'
-import { ApiError } from '@/api/http'
+import { ApiError, DATABASE_ERROR, isServerFailure } from '@/api/http'
 import { fetchSighting, listFlags, reviewFlag, setSightingVerification } from '@/api/admin'
 import { useListQuery } from '@/composables/useListQuery'
 import { useToastStore } from '@/stores/toast'
@@ -165,7 +165,7 @@ function reportFailure(cause: unknown) {
     void loadQueue()
     return
   }
-  toasts.error(cause instanceof Error ? cause.message : 'The action failed.')
+  toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
 }
 
 watch(() => selected.value?.sighting_id ?? null, loadSighting)
@@ -294,7 +294,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="upholdOpen = true"
             >
-              <ShieldX :size="16" /> Uphold and deduct score
+              <ShieldX :size="16" /> Uphold and Penalise User
             </button>
             <button
               type="button"
@@ -302,7 +302,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="dismissFlag"
             >
-              <ShieldCheck :size="16" /> Dismiss flag
+              <ShieldCheck :size="16" /> Dismiss Flag
             </button>
             <Loader2 v-if="acting" :size="18" class="animate-spin self-center text-stone-400" />
           </div>
@@ -325,7 +325,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="moderateSighting('Dismissed')"
             >
-              Withdraw sighting
+              Dismiss
             </button>
             <button
               v-else
@@ -334,7 +334,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="moderateSighting('Verified')"
             >
-              <RotateCcw :size="14" /> Reverse dismissal
+              <RotateCcw :size="14" /> Restore
             </button>
           </div>
         </footer>

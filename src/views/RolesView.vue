@@ -22,7 +22,7 @@ import DataState from '@/components/Common/DataState.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
 import ConfirmDialog from '@/components/Common/ConfirmDialog.vue'
-import { ApiError } from '@/api/http'
+import { ApiError, DATABASE_ERROR, isServerFailure } from '@/api/http'
 import { assignUserRole, findUserByEmail, listAdmins } from '@/api/admin'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
@@ -135,7 +135,7 @@ async function confirmRoleChange() {
     if (cause instanceof ApiError && cause.isConflict) {
       toasts.error(cause.message)
     } else {
-      toasts.error(cause instanceof Error ? cause.message : 'Role change failed.')
+      toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
     }
   } finally {
     acting.value = false
