@@ -167,7 +167,7 @@ onMounted(load)
         @retry="load"
       >
         <ul class="divide-y divide-stone-100 overflow-y-auto">
-          <li v-for="entry in entries" :key="keyOf(entry)">
+          <li v-for="entry in entries" :key="keyOf(entry)" :data-testid="`bounty-${entry.pet_id}`">
             <button
               type="button"
               :class="selectedKey === keyOf(entry) ? 'bg-orange-50' : 'hover:bg-stone-50'"

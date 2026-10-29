@@ -214,7 +214,7 @@ onMounted(loadQueue)
         @retry="loadQueue"
       >
         <ul class="min-h-0 flex-1 divide-y divide-stone-100 overflow-y-auto">
-          <li v-for="flag in flags" :key="flag.id">
+          <li v-for="flag in flags" :key="flag.id" :data-testid="`flag-${flag.id}`">
             <button
               type="button"
               :class="selectedId === flag.id ? 'bg-orange-50' : 'hover:bg-stone-50'"
