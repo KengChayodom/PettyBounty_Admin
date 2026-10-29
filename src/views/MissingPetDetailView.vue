@@ -141,6 +141,7 @@ onMounted(() => {
               <p class="text-stone-500 capitalize">{{ pet.species }}</p>
             </div>
             <StatusBadge
+              data-testid="pet-status"
               :value="pet.status === 'Searching' && (pet.sighting_count ?? 0) > 0 ? 'Spotted' : pet.status"
             />
           </div>

@@ -27,7 +27,7 @@ const coords = computed(() => props.sighting ? parseLocationStr(props.sighting.s
     :skeleton-rows="5"
     @retry="emit('retry')"
   >
-    <div v-if="sighting" class="flex flex-col gap-5 lg:flex-row">
+    <div v-if="sighting" :data-testid="`sighting-${sighting.id}-hunter-${sighting.hunter_id}`" class="flex flex-col gap-5 lg:flex-row">
       <div class="lg:w-72 lg:shrink-0">
         <img
           v-if="sighting.image_url"
