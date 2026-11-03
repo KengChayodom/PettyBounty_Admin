@@ -3,7 +3,7 @@
  * Browse every report on the platform, read any
  * report's full sighting timeline, and remove one that breaks the guidelines.
  *
- * Removal is a hard delete with no undo (UD-14's postcondition is "removed from
+ * Removal is a hard delete with no undo (the postcondition is "removed from
  * the database and the search map"), so it is the one action here behind a
  * confirmation naming the pet.
  */
@@ -13,6 +13,7 @@ import PageHeader from '@/components/Common/PageHeader.vue'
 import Pagination from '@/components/Common/Pagination.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
 import { listMissingPets } from '@/api/admin'
+import { isServerFailure } from '@/api/http'
 import { useListQuery } from '@/composables/useListQuery'
 import { formatBounty, formatDateTime, shortId } from '@/utils/format'
 import type { MissingPet, PetStatus } from '@/types/domain'
@@ -71,7 +72,9 @@ async function loadPets() {
     total.value = data.total
   } catch (cause) {
     if (id !== loadId) return
-    error.value = cause instanceof Error ? cause.message : 'Failed to load reports.'
+    error.value = isServerFailure(cause)
+      ? 'Connection error. Unable to load reports.'
+      : (cause as Error).message
     pets.value = []
     total.value = 0
   } finally {

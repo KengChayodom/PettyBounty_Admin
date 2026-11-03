@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Role management — UD-23.
+ * Role management.
  *
  * This screen grants and revokes console access. It is NOT account
  * management: there is no account listing, no search of the user base, no
@@ -22,7 +22,7 @@ import DataState from '@/components/Common/DataState.vue'
 import PageHeader from '@/components/Common/PageHeader.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
 import ConfirmDialog from '@/components/Common/ConfirmDialog.vue'
-import { ApiError } from '@/api/http'
+import { ApiError, DATABASE_ERROR, isServerFailure } from '@/api/http'
 import { assignUserRole, findUserByEmail, listAdmins } from '@/api/admin'
 import { useToastStore } from '@/stores/toast'
 import { useAuthStore } from '@/stores/auth'
@@ -135,7 +135,7 @@ async function confirmRoleChange() {
     if (cause instanceof ApiError && cause.isConflict) {
       toasts.error(cause.message)
     } else {
-      toasts.error(cause instanceof Error ? cause.message : 'Role change failed.')
+      toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
     }
   } finally {
     acting.value = false
@@ -160,7 +160,6 @@ const confirmLabel = computed(() =>
   <PageHeader
     title="Roles"
     subtitle="Grant and revoke administrator access to this console."
-    requirement="SRS-93–98 · UD-23"
   />
 
   <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-6 xl:flex-row">

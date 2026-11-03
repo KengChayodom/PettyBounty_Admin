@@ -2,7 +2,7 @@
 /**
  * What the administrator is actually ruling on: the photo, plus the facts that
  * decide a flag (species, action type, where and when, current moderation
- * state). UD-16 step 1 lists exactly this.
+ * state). The use case lists exactly this.
  */
 import DataState from '@/components/Common/DataState.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
@@ -27,7 +27,7 @@ const coords = computed(() => props.sighting ? parseLocationStr(props.sighting.s
     :skeleton-rows="5"
     @retry="emit('retry')"
   >
-    <div v-if="sighting" class="flex flex-col gap-5 lg:flex-row">
+    <div v-if="sighting" :data-testid="`sighting-${sighting.id}-hunter-${sighting.hunter_id}`" class="flex flex-col gap-5 lg:flex-row">
       <div class="lg:w-72 lg:shrink-0">
         <img
           v-if="sighting.image_url"

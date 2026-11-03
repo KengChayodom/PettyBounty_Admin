@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The moderation queue — UD-15, UD-16.
+ * The moderation queue.
  *
  * A flag row names the *reporter* and the sighting id, never the photo, so the
  * sighting behind the selected flag is fetched separately: an administrator
@@ -19,7 +19,7 @@ import Pagination from '@/components/Common/Pagination.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
 import SightingPanel from '@/components/Review/SightingPanel.vue'
 import UpholdDialog from '@/components/Review/UpholdDialog.vue'
-import { ApiError } from '@/api/http'
+import { ApiError, DATABASE_ERROR, isServerFailure } from '@/api/http'
 import { fetchSighting, listFlags, reviewFlag, setSightingVerification } from '@/api/admin'
 import { useListQuery } from '@/composables/useListQuery'
 import { useToastStore } from '@/stores/toast'
@@ -139,7 +139,7 @@ async function uphold(points: number) {
   }
 }
 
-/** UD-16 — moderate the sighting itself, independent of the flag. */
+/** Moderate the sighting itself, independent of the flag. */
 async function moderateSighting(status: 'Verified' | 'Dismissed') {
   const target = sighting.value
   if (!target) return
@@ -160,12 +160,12 @@ async function moderateSighting(status: 'Verified' | 'Dismissed') {
 
 function reportFailure(cause: unknown) {
   if (cause instanceof ApiError && cause.isConflict) {
-    // UD-16 [E1] Action Conflict — another admin got there first.
+    // Action Conflict — another admin got there first.
     toasts.error('This flag has already been moderated. Refreshing the queue.')
     void loadQueue()
     return
   }
-  toasts.error(cause instanceof Error ? cause.message : 'The action failed.')
+  toasts.error(isServerFailure(cause) ? DATABASE_ERROR : (cause as Error).message)
 }
 
 watch(() => selected.value?.sighting_id ?? null, loadSighting)
@@ -214,7 +214,7 @@ onMounted(loadQueue)
         @retry="loadQueue"
       >
         <ul class="min-h-0 flex-1 divide-y divide-stone-100 overflow-y-auto">
-          <li v-for="flag in flags" :key="flag.id">
+          <li v-for="flag in flags" :key="flag.id" :data-testid="`flag-${flag.id}`">
             <button
               type="button"
               :class="selectedId === flag.id ? 'bg-orange-50' : 'hover:bg-stone-50'"
@@ -294,7 +294,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="upholdOpen = true"
             >
-              <ShieldX :size="16" /> Uphold and deduct score
+              <ShieldX :size="16" /> Uphold and Penalise User
             </button>
             <button
               type="button"
@@ -302,7 +302,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="dismissFlag"
             >
-              <ShieldCheck :size="16" /> Dismiss flag
+              <ShieldCheck :size="16" /> Dismiss Flag
             </button>
             <Loader2 v-if="acting" :size="18" class="animate-spin self-center text-stone-400" />
           </div>
@@ -325,7 +325,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="moderateSighting('Dismissed')"
             >
-              Withdraw sighting
+              Dismiss
             </button>
             <button
               v-else
@@ -334,7 +334,7 @@ onMounted(loadQueue)
               :disabled="acting"
               @click="moderateSighting('Verified')"
             >
-              <RotateCcw :size="14" /> Reverse dismissal
+              <RotateCcw :size="14" /> Restore
             </button>
           </div>
         </footer>

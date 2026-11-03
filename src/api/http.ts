@@ -24,7 +24,7 @@ export class ApiError extends Error {
     this.name = 'ApiError'
   }
 
-  /** 409 — another admin already decided this flag (UD-16 [E1]). */
+  /** 409 — another admin already decided this flag. */
   get isConflict() {
     return this.status === 409
   }
@@ -34,6 +34,19 @@ export class ApiError extends Error {
     return this.status === 401 || this.status === 403
   }
 }
+
+/**
+ * True when the request never reached a working server: the network failed or
+ * the server answered 5xx. A 4xx is the server refusing the request, and its
+ * message is shown as it is.
+ */
+export function isServerFailure(cause: unknown): boolean {
+  return !(cause instanceof ApiError) || cause.status === 0 || cause.status >= 500
+}
+
+/** What the console shows when a write could not reach a working server. */
+export const DATABASE_ERROR = 'Database error. Please try again later'
+
 
 export const API_BASE_URL: string = import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000'
 
@@ -113,7 +126,7 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     })
   } catch (cause) {
     // fetch only rejects for transport failures — the server being down, CORS,
-    // DNS. UD-13 [E1] / UD-14 [E1] both want this said plainly.
+    // DNS. The use cases want this said plainly.
     throw new ApiError(0, `Cannot reach the backend at ${API_BASE_URL}. Is uvicorn running?`)
   }
 
