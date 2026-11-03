@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * UD-13 — every sighting logged against one report, newest first,
+ * Every sighting logged against one report, newest first,
  * Dismissed entries included. The owner's copy of this list hides those; the
  * administrator's must not, or moderation would be invisible to the person
  * doing it.
  *
  * Each row also carries the sighting-moderation controls, because the timeline is the other
- * place UD-16 says a sighting is moderated from.
+ * place the use case says a sighting is moderated from.
  */
 import DataState from '@/components/Common/DataState.vue'
 import StatusBadge from '@/components/Common/StatusBadge.vue'
@@ -99,7 +99,7 @@ const emit = defineEmits<{
               :disabled="busy"
               @click="emit('moderate', entry.id, 'Dismissed')"
             >
-              Withdraw
+              Dismiss
             </button>
             <button
               v-else
@@ -108,7 +108,7 @@ const emit = defineEmits<{
               :disabled="busy"
               @click="emit('moderate', entry.id, 'Verified')"
             >
-              Reverse dismissal
+              Restore
             </button>
           </div>
         </div>
