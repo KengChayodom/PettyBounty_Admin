@@ -1,9 +1,16 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import AdminLayout from '@/views/AdminLayout.vue'
+import ToastHost from '@/components/Common/ToastHost.vue'
+
+const route = useRoute()
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p class="text-red-500">
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <!-- Sign-in stands alone: no sidebar to a console you are not in yet. -->
+  <RouterView v-if="route.meta.public" />
+  <AdminLayout v-else>
+    <RouterView />
+  </AdminLayout>
+  <ToastHost />
 </template>

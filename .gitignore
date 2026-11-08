@@ -37,3 +37,9 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+# Automated UI evidence and private configuration
+/playwright-report/
+/test-results/
+/playwright/.auth/
+/.env.ui.local
